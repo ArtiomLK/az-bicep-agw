@@ -1,4 +1,4 @@
-# Azure App Service Plan
+# Azure Application Gateway
 
 ## Instructions
 
