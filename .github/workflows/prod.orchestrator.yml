@@ -1,8 +1,8 @@
 on: [release]
 
 env:
-  ACR_MODULE_N: plan
-  RG_N: rg-azure-bicep-app-service-plan
+  ACR_MODULE_N: agw
+  RG_N: rg-azure-bicep-application-gateway
 
 name: PROD - Deploy Azure Resource
 jobs:
