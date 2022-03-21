@@ -36,7 +36,7 @@ param agw_sku string
 ])
 param agw_tier string
 
-@description('Appication Gateway Enable Autoscaling. Standard_v2 & WAF_V2 supports autoscaling')
+@description('Application Gateway Enable Autoscaling. Standard_v2 & WAF_V2 supports autoscaling')
 param agw_enable_autoscaling bool = false
 
 @description('Application Gateway initial capacity')
@@ -88,7 +88,7 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
   tags: tags
   location: location
   sku: {
-    name: 'Standard'
+    name: agw_tier == 'Standard_v2' || agw_tier ==  'WAF_v2' ? 'Standard' : 'Basic'
   }
   properties: {
     publicIPAllocationMethod: 'Static'
