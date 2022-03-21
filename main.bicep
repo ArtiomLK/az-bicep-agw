@@ -177,7 +177,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
           id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', agw_n, agw_frontend_ip_config_n)
         }
         frontendPort: {
-          id: agw_front_end_port_names[i]
+          id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', agw_n, agw_front_end_port_names[i])
         }
         protocol: 'Http'
         sslCertificate: null
@@ -189,13 +189,13 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
       properties: {
         ruleType: 'Basic'
         httpListener: {
-          id: '${resourceId('Microsoft.Network/applicationGateways/httpListeners', agw_n, agw_http_listener_names[i])}'
+          id: resourceId('Microsoft.Network/applicationGateways/httpListeners', agw_n, agw_http_listener_names[i])
         }
         backendAddressPool: {
-          id: '${resourceId('Microsoft.Network/applicationGateways/backendAddressPools', agw_n, agw_backend_addr_pool_names[i])}'
+          id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', agw_n, agw_backend_addr_pool_names[i])
         }
         backendHttpSettings: {
-          id: '${resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', agw_n, agw_backend_http_setting_names[i])}'
+          id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', agw_n, agw_backend_http_setting_names[i])
         }
       }
     }]
