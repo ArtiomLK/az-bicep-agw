@@ -75,6 +75,23 @@ resource appA 'Microsoft.Web/sites@2018-11-01' = {
   }
 }
 
+resource appB 'Microsoft.Web/sites@2018-11-01' = {
+  name: take('appB-${guid(subscription().id, resourceGroup().id, tags.env)}', 60)
+  location: location
+  tags: tags
+  properties: {
+    serverFarmId: appServicePlan.id
+  }
+}
+resource appC 'Microsoft.Web/sites@2018-11-01' = {
+  name: take('appC-${guid(subscription().id, resourceGroup().id, tags.env)}', 60)
+  location: location
+  tags: tags
+  properties: {
+    serverFarmId: appServicePlan.id
+  }
+}
+
 // ------------------------------------------------------------------------------------------------
 // Applciation Gateway Deployment Examples
 // ------------------------------------------------------------------------------------------------
@@ -87,6 +104,19 @@ module DeployAgwOneApp '../main.bicep' = {
     agw_tier: 'Standard_v2'
     snet_agw_id: vnetApp.properties.subnets[0].id
     agw_front_end_ports: '8080'
+    agw_n: 'agw-DeployAgwOneApp'
+  }
+}
+
+module DeployAgwMultiApp '../main.bicep' = {
+  name: 'DeployAgwMultiApp'
+  params: {
+    location: location
+    agw_backend_app_names: '${appA.name},${appB.name},${appC.name}'
+    agw_sku: 'Standard_v2'
+    agw_tier: 'Standard_v2'
+    snet_agw_id: vnetApp.properties.subnets[0].id
+    agw_front_end_ports: '80,8080,8081'
     agw_n: 'agw-DeployAgwOneApp'
   }
 }
