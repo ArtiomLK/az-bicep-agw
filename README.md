@@ -4,40 +4,18 @@
 
 ### Parameter Values
 
-| Name                        | Description                                                                                  | Value                         | Examples                                                             |
-| --------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------- | -------------------------------------------------------------------- |
-| tags                        | Az Resources tags                                                                            | object                        | `{ key: value }`                                                     |
-| location                    | Az Resources deployment location. To get Az regions run `az account list-locations -o table` | string [default: rg location] | `eastus` \| `centralus` \| `westus` \| `westus2` \| `southcentralus` |
-| plan_n                      | App Service Plan Name                                                                        | string [required]             |                                                                      |
-| plan_sku_code               | App Service Plan Size                                                                        | string [default: `F1`]        | `F1` \| `S2` \| `P1V2` \| `P3V2` \| `P3V3`                           |
-| plan_sku_tier               | App Service Plan SKU Tier                                                                    | string [default: `Free`]      | `Free` \| `Basic` \| `Standard` \| `PremiumV2` \| `PremiumV3`        |
-| plan_os_kind                | App Service Plan OS kind                                                                     | string [default: `windows`]   | `windows` \| `'linux'`                                               |
-| plan_enable_zone_redundancy | Enable App Service Plan High Availability Zone Redundancy                                    | string                        |                                                                      |
+| Name                       | Description                                                                                  | Value                         | Examples                                                                                                              |
+| -------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| tags                       | Az Resources tags                                                                            | object                        | `{ key: value }`                                                                                                      |
+| location                   | Az Resources deployment location. To get Az regions run `az account list-locations -o table` | string [default: rg location] | `eastus` \| `centralus` \| `westus` \| `westus2` \| `southcentralus`                                                  |
+| agw_n                      | Application Gateway Name                                                                     | string [required]             |                                                                                                                       |
+| agw_enable_zone_redundancy | Applicaton Gateway Enable Zone Redundancy Flag                                               | string [default: `false`]     | `true` \| `false`                                                                                                     |
+| agw_sku                    | Application Gateway sku size                                                                 | string [required]             | `Standard_Small` \| `Standard_Medium` \| `Standard_Large` \| `WAF_Medium` \| `WAF_Large` \| `Standard_v2` \| `WAF_v2` |
+| agw_tier                   | Application Gateway tier type                                                                | string [default: `false`]     | `Standard` \| `WAF` \| `Standard_v2` \| `WAF_v2`                                                                      |
+| agw_capacity               | Application Gateway initial capacity                                                         | string [default: `1`]         |                                                                                                                       |
+| agw_max_capacity           | Application Gateway initial capacity                                                         | string [default: `10`]        |                                                                                                                       |
 
 ### Conditional Parameter Values
-
-#### App Service Plan Combinations
-
-Only PremiumV2 and PremiumV3 allow Hight Availability Zone Redundancy
-
-- App Service Plan **Free**:
-  - `Free`
-    - `F1`
-- App Service Plan **Basic**:
-  - `Standard`
-    - `S1`
-    - `S2`
-    - `S3`
-- App Service Plan **PremiumV2** allows Hight Availability Zone Redundancy:
-  - `PremiumV2`
-    - `P1V2`
-    - `P2V2`
-    - `P3V2`
-- App Service Plan **PremiumV3** allows Hight Availability Zone Redundancy:
-  - `PremiumV3`
-    - `P1V3`
-    - `P2V3`
-    - `P3V3`
 
 ### [Reference Examples][1]
 
@@ -46,13 +24,13 @@ Only PremiumV2 and PremiumV3 allow Hight Availability Zone Redundancy
 ```bash
 # Create an Azure Resource Group
 az group create \
---name 'rg-azure-bicep-app-service-plan' \
+--name 'rg-azure-bicep-application-gateway' \
 --location 'eastus2' \
 --tags project=bicephub env=dev
 
 # Deploy Sample Modules
 az deployment group create \
---resource-group 'rg-azure-bicep-app-service-plan' \
+--resource-group 'rg-azure-bicep-application-gateway' \
 --mode Complete \
 --template-file examples/examples.bicep
 ```
