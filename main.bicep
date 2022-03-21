@@ -113,6 +113,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
     sku: {
       name: agw_sku
       tier: agw_tier
+      capacity: agw_capacity
     }
     autoscaleConfiguration: {
       minCapacity: agw_capacity
