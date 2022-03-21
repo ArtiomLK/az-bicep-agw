@@ -117,6 +117,6 @@ module DeployAgwMultiApp '../main.bicep' = {
     agw_tier: 'Standard_v2'
     snet_agw_id: vnetApp.properties.subnets[0].id
     agw_front_end_ports: '80,8080,8081'
-    agw_n: 'agw-DeployAgwOneApp'
+    agw_n: 'agw-DeployAgwMultiApp'
   }
 }
