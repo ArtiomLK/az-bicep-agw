@@ -91,7 +91,7 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
     name: agw_tier == 'Standard_v2' || agw_tier ==  'WAF_v2' ? 'Standard' : 'Basic'
   }
   properties: {
-    publicIPAllocationMethod: 'Static'
+    publicIPAllocationMethod: agw_tier == 'Standard_v2' || agw_tier ==  'WAF_v2' ? 'Static' : 'Dynamic'
   }
   zones: agw_enable_zone_redundancy ? [
     '1'
