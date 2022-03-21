@@ -39,7 +39,7 @@ param agw_tier string
 @description('Application Gateway initial capacity')
 @minValue(1)
 @maxValue(32)
-param agw_capacity int = 1
+param agw_capacity int = 2
 
 @description('Application Gateway Maximum capacity')
 @minValue(1)
@@ -113,7 +113,6 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
     sku: {
       name: agw_sku
       tier: agw_tier
-      capacity: agw_capacity
     }
     autoscaleConfiguration: {
       minCapacity: agw_capacity
