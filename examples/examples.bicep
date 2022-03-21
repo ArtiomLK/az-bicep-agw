@@ -209,7 +209,7 @@ module DeployAgwMultiAppCustomScaling '../main.bicep' = {
     agw_backend_app_names: '${appA.name},${appB.name},${appC.name}'
     agw_sku: 'Standard_v2'
     agw_tier: 'Standard_v2'
-    snet_agw_id: vnetApp.properties.subnets[7].id
+    snet_agw_id: vnetApp.properties.subnets[8].id
     agw_front_end_ports: '80,8080,8081'
     agw_n: 'agw-DeployAgwMultiAppCustomScaling'
   }

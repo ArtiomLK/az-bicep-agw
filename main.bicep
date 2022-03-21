@@ -9,6 +9,9 @@ param location string
 // ------------------------------------------------------------------------------------------------
 // AGW Configuration parameters
 // ------------------------------------------------------------------------------------------------
+@description('Application Gateway Public Ip Name')
+param agw_pip_n string ='pip-${agw_n}'
+
 @description('Application Gateway Name')
 param agw_n string
 
@@ -42,7 +45,7 @@ param agw_enable_autoscaling bool = false
 @description('Application Gateway initial capacity')
 @minValue(1)
 @maxValue(32)
-param agw_capacity int = 2
+param agw_capacity int = 1
 
 @description('Application Gateway Maximum capacity')
 @minValue(1)
@@ -59,7 +62,7 @@ param snet_agw_id string
 param agw_backend_app_names string
 var app_names_parsed = split(agw_backend_app_names, ',')
 
-@description('Application Gateay Front End Ports. E.G. 8080,80,8081 | 8080 | 8080,8081')
+@description('Application Gatweay Front End Ports. E.G. 8080,80,8081 | 8080 | 8080,8081')
 param agw_front_end_ports string
 var agw_front_end_ports_parsed = split(agw_front_end_ports, ',')
 
@@ -72,13 +75,6 @@ var agw_rules = [for app_n in app_names_parsed: take('${app_n}-rule', 80)]
 
 var agw_snet_ip_config_n = 'agw-snet-ip-config'
 var agw_frontend_ip_config_n = 'agw-frontend-ip-config'
-
-// ------------------------------------------------------------------------------------------------
-// Additional Required Resources parameters
-// ------------------------------------------------------------------------------------------------
-@description('Applicagion Gateway Public Ip Name')
-param agw_pip_n string ='pip-${agw_n}'
-
 
 // ------------------------------------------------------------------------------------------------
 // Deploy PIP
