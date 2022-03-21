@@ -36,6 +36,9 @@ param agw_sku string
 ])
 param agw_tier string
 
+@description('Appication Gateway Enable Autoscaling. Standard_v2 & WAF_V2 supports autoscaling')
+param agw_enable_autoscaling bool = false
+
 @description('Application Gateway initial capacity')
 @minValue(1)
 @maxValue(32)
@@ -113,12 +116,12 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
     sku: {
       name: agw_sku
       tier: agw_tier
+      capacity: agw_enable_autoscaling ? null : agw_capacity
     }
-    autoscaleConfiguration: {
+    autoscaleConfiguration: agw_enable_autoscaling ? {
       minCapacity: agw_capacity
       maxCapacity: agw_max_capacity
-    }
-
+    } : null
     gatewayIPConfigurations: [
       {
         name: agw_snet_ip_config_n

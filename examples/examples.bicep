@@ -202,6 +202,7 @@ module DeployAgwMultiApp '../main.bicep' = {
 module DeployAgwMultiAppCustomScaling '../main.bicep' = {
   name: 'DeployAgwMultiAppCustomScaling'
   params: {
+    agw_enable_autoscaling: true
     agw_capacity:2
     agw_max_capacity: 32
     location: location
