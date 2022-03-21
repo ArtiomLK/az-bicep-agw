@@ -21,14 +21,14 @@ param plan_enable_zone_redundancy bool = false
 // ------------------------------------------------------------------------------------------------
 // Applciation Gateway Networking Configurations Examples
 // ------------------------------------------------------------------------------------------------
-var subnets = [
-  {
-    name: 'snet-agw-azure-bicep'
-    subnetPrefix: '192.160.0.0/24'
+var vnet_addr = '192.160.0.0/20'
+var snet_count = 16
+var subnets = [ for i in range(0, snet_count) : {
+    name: 'snet-${i}-agw-azure-bicep'
+    subnetPrefix: '192.160.${i}.0/24'
     privateEndpointNetworkPolicies: 'Enabled'
     delegations: []
-  }
-]
+  }]
 
 resource vnetApp 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: 'vnet-azure-bicep-app-service'
@@ -37,7 +37,7 @@ resource vnetApp 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   properties: {
     addressSpace: {
       addressPrefixes: [
-        '192.160.0.0/23'
+        vnet_addr
       ]
     }
     subnets: [for subnet in subnets: {
@@ -95,16 +95,94 @@ resource appC 'Microsoft.Web/sites@2018-11-01' = {
 // ------------------------------------------------------------------------------------------------
 // Applciation Gateway Deployment Examples
 // ------------------------------------------------------------------------------------------------
-module DeployAgwOneApp '../main.bicep' = {
-  name: 'DeployAgwOneApp'
+module DeployAgwOneAppStandardSmall '../main.bicep' = {
+  name: 'DeployAgwOneAppStandardSmall'
+  params: {
+    location: location
+    agw_backend_app_names: appA.name
+    agw_sku: 'Standard_Small'
+    agw_tier: 'Standard'
+    snet_agw_id: vnetApp.properties.subnets[0].id
+    agw_front_end_ports: '80'
+    agw_n: 'agw-DeployAgwOneAppStandardSmall'
+  }
+}
+
+module DeployAgwOneAppStandardMedium '../main.bicep' = {
+  name: 'DeployAgwOneAppStandardMedium'
+  params: {
+    location: location
+    agw_backend_app_names: appA.name
+    agw_sku: 'Standard_Medium'
+    agw_tier: 'Standard'
+    snet_agw_id: vnetApp.properties.subnets[1].id
+    agw_front_end_ports: '80'
+    agw_n: 'agw-DeployAgwOneAppStandardMedium'
+  }
+}
+
+module DeployAgwOneAppStandardLarge '../main.bicep' = {
+  name: 'DeployAgwOneAppStandardLarge'
+  params: {
+    location: location
+    agw_backend_app_names: appA.name
+    agw_sku: 'Standard_Large'
+    agw_tier: 'Standard'
+    snet_agw_id: vnetApp.properties.subnets[2].id
+    agw_front_end_ports: '80'
+    agw_n: 'agw-DeployAgwOneAppStandardLarge'
+  }
+}
+
+module DeployAgwOneAppWAFMedium '../main.bicep' = {
+  name: 'DeployAgwOneAppWAFMedium'
+  params: {
+    location: location
+    agw_backend_app_names: appA.name
+    agw_sku: 'WAF_Medium'
+    agw_tier: 'WAF'
+    snet_agw_id: vnetApp.properties.subnets[3].id
+    agw_front_end_ports: '80'
+    agw_n: 'agw-DeployAgwOneAppWAFMedium'
+  }
+}
+
+module DeployAgwOneAppWAFLarge '../main.bicep' = {
+  name: 'DeployAgwOneAppWAFLarge'
+  params: {
+    location: location
+    agw_backend_app_names: appA.name
+    agw_sku: 'WAF_Large'
+    agw_tier: 'WAF'
+    snet_agw_id: vnetApp.properties.subnets[4].id
+    agw_front_end_ports: '80'
+    agw_n: 'agw-DeployAgwOneAppWAFLarge'
+  }
+}
+
+module DeployAgwOneAppStandardV2 '../main.bicep' = {
+  name: 'DeployAgwOneAppStandardV2'
   params: {
     location: location
     agw_backend_app_names: appA.name
     agw_sku: 'Standard_v2'
     agw_tier: 'Standard_v2'
-    snet_agw_id: vnetApp.properties.subnets[0].id
-    agw_front_end_ports: '8080'
-    agw_n: 'agw-DeployAgwOneApp'
+    snet_agw_id: vnetApp.properties.subnets[5].id
+    agw_front_end_ports: '80'
+    agw_n: 'agw-DeployAgwOneAppStandardV2'
+  }
+}
+
+module DeployAgwOneAppStandardWAFV2 '../main.bicep' = {
+  name: 'DeployAgwOneAppStandardWAFV2'
+  params: {
+    location: location
+    agw_backend_app_names: appA.name
+    agw_sku: 'WAF_v2'
+    agw_tier: 'WAF_v2'
+    snet_agw_id: vnetApp.properties.subnets[6].id
+    agw_front_end_ports: '80'
+    agw_n: 'agw-DeployAgwOneAppStandardWAFV2'
   }
 }
 
@@ -115,8 +193,23 @@ module DeployAgwMultiApp '../main.bicep' = {
     agw_backend_app_names: '${appA.name},${appB.name},${appC.name}'
     agw_sku: 'Standard_v2'
     agw_tier: 'Standard_v2'
-    snet_agw_id: vnetApp.properties.subnets[0].id
+    snet_agw_id: vnetApp.properties.subnets[7].id
     agw_front_end_ports: '80,8080,8081'
     agw_n: 'agw-DeployAgwMultiApp'
+  }
+}
+
+module DeployAgwMultiAppCustomScaling '../main.bicep' = {
+  name: 'DeployAgwMultiAppCustomScaling'
+  params: {
+    agw_capacity:2
+    agw_max_capacity: 32
+    location: location
+    agw_backend_app_names: '${appA.name},${appB.name},${appC.name}'
+    agw_sku: 'Standard_v2'
+    agw_tier: 'Standard_v2'
+    snet_agw_id: vnetApp.properties.subnets[7].id
+    agw_front_end_ports: '80,8080,8081'
+    agw_n: 'agw-DeployAgwMultiAppCustomScaling'
   }
 }
