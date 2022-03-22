@@ -63,6 +63,7 @@ var snet_agw_id_parsed = {
   snet_n: substring(snet_agw_id, lastIndexOf(snet_agw_id, '/subnets/') + 9)
 }
 
+@description('Deploy a NSG configured for AGW and attach to the AGW SNET')
 param deploy_agw_nsg bool = false
 
 // ------------------------------------------------------------------------------------------------
@@ -115,7 +116,7 @@ resource vnet_agw 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' existin
 
 resource nsgAgwV2 'Microsoft.Network/networkSecurityGroups@2021-02-01' = if(deploy_agw_nsg)  {
   tags: tags
-  name: 'nsg-agw-${tags.project}-${tags.env}'
+  name: 'nsg-${agw_n}'
   location: location
   properties: {
     securityRules: [
