@@ -63,6 +63,8 @@ var snet_agw_id_parsed = {
   snet_n: substring(snet_agw_id, lastIndexOf(snet_agw_id, '/subnets/') + 9)
 }
 
+param deploy_agw_nsg bool = false
+
 // ------------------------------------------------------------------------------------------------
 // AGW Back End Rule Configuration
 // ------------------------------------------------------------------------------------------------
@@ -111,7 +113,7 @@ resource vnet_agw 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' existin
   name: snet_agw_id_parsed.snet_n
 }
 
-resource nsgAgwV2 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
+resource nsgAgwV2 'Microsoft.Network/networkSecurityGroups@2021-02-01' = if(deploy_agw_nsg)  {
   tags: tags
   name: 'nsg-agw-${tags.project}-${tags.env}'
   location: location
