@@ -22,6 +22,30 @@
 
 ### Conditional Parameter Values
 
+Application Gateway Combinations:
+
+- `Standard`
+  - SKU Tier:
+    - `Standard_Small`
+    - `Standard_Medium`
+    - `Standard_Large`
+  - agw_capacity: [1,32]
+- `WAF`
+  - SKU Tier:
+    - `WAF_Medium`
+    - `WAF_Large`
+  - agw_capacity: [1,32]
+- `Standard_v2`
+  - SKU Tier:
+    - `Standard_v2`
+  - agw_enable_autoscaling available
+  - agw_capacity: [0,125]
+- `WAF_v2`
+  - SKU Tier:
+    - `WAF_v2`
+  - agw_enable_autoscaling available
+  - agw_capacity: [0,125]
+
 ### [Reference Examples][1]
 
 ## Locally test Azure Bicep Modules
