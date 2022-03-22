@@ -110,11 +110,11 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
 // ------------------------------------------------------------------------------------------------
 // Deploy AGW NSG
 // ------------------------------------------------------------------------------------------------
-resource vnet_agw 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' existing = {
+resource vnetAgw 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' existing = {
   name: snet_agw_id_parsed.snet_n
 }
 
-resource nsgAgwV2 'Microsoft.Network/networkSecurityGroups@2021-02-01' = if(deploy_agw_nsg)  {
+resource nsgAgw 'Microsoft.Network/networkSecurityGroups@2021-02-01' = if(deploy_agw_nsg)  {
   tags: tags
   name: 'nsg-${agw_n}'
   location: location
