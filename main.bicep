@@ -57,17 +57,6 @@ param agw_max_capacity int = 10
 @description('Application Gateway deployment subnet ID')
 param snet_agw_id string
 
-@description('Application Gateway deployment subnet Address space')
-param snet_agw_addr string = ''
-  // var snet_agw_id_parsed = {
-  //   sub_id: substring(substring(snet_agw_id, indexOf(snet_agw_id, 'subscriptions/') + 14), 0, indexOf(substring(snet_agw_id, indexOf(snet_agw_id, 'subscriptions/') + 14), '/'))
-  //   rg_n: substring(substring(snet_agw_id, indexOf(snet_agw_id, 'resourceGroups/') + 15), 0, indexOf(substring(snet_agw_id, indexOf(snet_agw_id, 'resourceGroups/') + 15), '/'))
-  //   vnet_n: substring(substring(snet_agw_id, indexOf(snet_agw_id, 'virtualNetworks/') + 16), 0, indexOf(substring(snet_agw_id, indexOf(snet_agw_id, 'virtualNetworks/') + 16), '/'))
-  //   snet_n: substring(snet_agw_id, lastIndexOf(snet_agw_id, '/subnets/') + 9)
-  // }
-
-@description('Deploy a NSG configured for AGW and attach to the AGW SNET')
-param deploy_agw_nsg bool = false
 // ------------------------------------------------------------------------------------------------
 // AGW Back End Rule Configuration
 // ------------------------------------------------------------------------------------------------
@@ -107,53 +96,6 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
     '2'
     '3'
   ] : []
-}
-
-// ------------------------------------------------------------------------------------------------
-// Deploy AGW NSG
-// ------------------------------------------------------------------------------------------------
-
-resource nsgAgw 'Microsoft.Network/networkSecurityGroups@2021-02-01' = if(deploy_agw_nsg)  {
-  tags: tags
-  name: 'nsg-${agw_n}'
-  location: location
-  properties: {
-    securityRules: [
-      {
-        name: 'AllowGatewayManagerInbound'
-        properties: {
-          description: 'Allow Gateway Manager Inbound administrative traffic'
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          destinationPortRange: agw_v2 ? '65200-65535' : '65503-65534'
-          sourceAddressPrefix: 'GatewayManager'
-          destinationAddressPrefix: '*'
-          access: 'Allow'
-          priority: 300
-          direction: 'Inbound'
-        }
-      }
-      {
-        name: 'AllowWebToAppGatewayInbound'
-        properties: {
-          protocol: 'Tcp'
-          sourcePortRange: '*'
-          sourceAddressPrefix: 'Internet'
-          destinationAddressPrefix: snet_agw_addr
-          access: 'Allow'
-          priority: 1000
-          direction: 'Inbound'
-          sourcePortRanges: []
-          destinationPortRanges: [
-            '80'
-            '443'
-          ]
-          sourceAddressPrefixes: []
-          destinationAddressPrefixes: []
-        }
-      }
-    ]
-  }
 }
 
 // ------------------------------------------------------------------------------------------------

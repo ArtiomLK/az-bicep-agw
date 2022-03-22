@@ -167,7 +167,6 @@ module DeployAgwOneAppStandardV2 '../main.bicep' = {
     agw_backend_app_names: appA.name
     agw_sku: 'Standard_v2'
     agw_tier: 'Standard_v2'
-    deploy_agw_nsg: true
     snet_agw_addr: vnetApp.properties.subnets[5].properties.addressPrefix
     snet_agw_id: vnetApp.properties.subnets[5].id
     agw_front_end_ports: '80'
@@ -204,7 +203,6 @@ module DeployAgwMultiApp '../main.bicep' = {
 module DeployAgwMultiAppCustomScaling '../main.bicep' = {
   name: 'DeployAgwMultiAppCustomScaling'
   params: {
-    agw_enable_autoscaling: true
     agw_capacity:2
     agw_max_capacity: 32
     location: location
@@ -216,3 +214,4 @@ module DeployAgwMultiAppCustomScaling '../main.bicep' = {
     agw_n: 'agw-DeployAgwMultiAppCustomScaling'
   }
 }
+
