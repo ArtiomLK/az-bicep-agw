@@ -56,6 +56,9 @@ param agw_max_capacity int = 10
 
 @description('Application Gateway deployment subnet ID')
 param snet_agw_id string
+
+@description('Application Gateway deployment subnet Address space')
+param snet_agw_addr string = ''
 var snet_agw_id_parsed = {
   sub_id: substring(substring(snet_agw_id, indexOf(snet_agw_id, 'subscriptions/') + 14), 0, indexOf(substring(snet_agw_id, indexOf(snet_agw_id, 'subscriptions/') + 14), '/'))
   rg_n: substring(substring(snet_agw_id, indexOf(snet_agw_id, 'resourceGroups/') + 15), 0, indexOf(substring(snet_agw_id, indexOf(snet_agw_id, 'resourceGroups/') + 15), '/'))
@@ -65,7 +68,6 @@ var snet_agw_id_parsed = {
 
 @description('Deploy a NSG configured for AGW and attach to the AGW SNET')
 param deploy_agw_nsg bool = false
-
 // ------------------------------------------------------------------------------------------------
 // AGW Back End Rule Configuration
 // ------------------------------------------------------------------------------------------------
@@ -110,9 +112,6 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
 // ------------------------------------------------------------------------------------------------
 // Deploy AGW NSG
 // ------------------------------------------------------------------------------------------------
-resource vnetAgw 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' existing = {
-  name: snet_agw_id_parsed.snet_n
-}
 
 resource nsgAgw 'Microsoft.Network/networkSecurityGroups@2021-02-01' = if(deploy_agw_nsg)  {
   tags: tags
@@ -140,7 +139,7 @@ resource nsgAgw 'Microsoft.Network/networkSecurityGroups@2021-02-01' = if(deploy
           protocol: 'Tcp'
           sourcePortRange: '*'
           sourceAddressPrefix: 'Internet'
-          destinationAddressPrefix: vnetAgw.properties.addressPrefix
+          destinationAddressPrefix: snet_agw_addr
           access: 'Allow'
           priority: 1000
           direction: 'Inbound'
