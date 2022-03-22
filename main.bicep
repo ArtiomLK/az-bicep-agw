@@ -140,7 +140,7 @@ resource nsgAgw 'Microsoft.Network/networkSecurityGroups@2021-02-01' = if(deploy
           protocol: 'Tcp'
           sourcePortRange: '*'
           sourceAddressPrefix: 'Internet'
-          destinationAddressPrefix: vnet_agw.properties.addressPrefix
+          destinationAddressPrefix: vnetAgw.properties.addressPrefix
           access: 'Allow'
           priority: 1000
           direction: 'Inbound'
