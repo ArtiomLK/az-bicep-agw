@@ -38,6 +38,7 @@ param agw_sku string
   'WAF_v2'
 ])
 param agw_tier string
+var agw_v2 = agw_tier == 'Standard_v2' || agw_tier ==  'WAF_v2'
 
 @description('Application Gateway Enable Autoscaling. Standard_v2 & WAF_V2 supports autoscaling')
 param agw_enable_autoscaling bool = false
@@ -46,7 +47,7 @@ param agw_enable_autoscaling bool = false
 @minValue(0)
 @maxValue(124)
 param agw_capacity int = 1
-var agw_min_capacity = (agw_tier == 'Standard' || agw_tier == 'WAF' &&  agw_capacity == 0) ? 1 : agw_capacity
+var agw_min_capacity = (!agw_v2 &&  agw_capacity == 0) ? 1 : agw_capacity
 
 @description('Application Gateway Maximum capacity')
 @minValue(0)
@@ -55,6 +56,12 @@ param agw_max_capacity int = 10
 
 @description('Application Gateway deployment subnet ID')
 param snet_agw_id string
+var snet_agw_id_parsed = {
+  sub_id: substring(substring(snet_agw_id, indexOf(snet_agw_id, 'subscriptions/') + 14), 0, indexOf(substring(snet_agw_id, indexOf(snet_agw_id, 'subscriptions/') + 14), '/'))
+  rg_n: substring(substring(snet_agw_id, indexOf(snet_agw_id, 'resourceGroups/') + 15), 0, indexOf(substring(snet_agw_id, indexOf(snet_agw_id, 'resourceGroups/') + 15), '/'))
+  vnet_n: substring(substring(snet_agw_id, indexOf(snet_agw_id, 'virtualNetworks/') + 16), 0, indexOf(substring(snet_agw_id, indexOf(snet_agw_id, 'virtualNetworks/') + 16), '/'))
+  snet_n: substring(snet_agw_id, lastIndexOf(snet_agw_id, '/subnets/') + 9)
+}
 
 // ------------------------------------------------------------------------------------------------
 // AGW Back End Rule Configuration
@@ -85,16 +92,66 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
   tags: tags
   location: location
   sku: {
-    name: agw_tier == 'Standard_v2' || agw_tier ==  'WAF_v2' ? 'Standard' : 'Basic'
+    name: agw_v2 ? 'Standard' : 'Basic'
   }
   properties: {
-    publicIPAllocationMethod: agw_tier == 'Standard_v2' || agw_tier ==  'WAF_v2' ? 'Static' : 'Dynamic'
+    publicIPAllocationMethod: agw_v2 ? 'Static' : 'Dynamic'
   }
   zones: agw_enable_zone_redundancy ? [
     '1'
     '2'
     '3'
   ] : []
+}
+
+// ------------------------------------------------------------------------------------------------
+// Deploy AGW NSG
+// ------------------------------------------------------------------------------------------------
+resource vnet_agw 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' existing = {
+  name: snet_agw_id_parsed.snet_n
+}
+
+resource nsgAgwV2 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
+  tags: tags
+  name: 'nsg-agw-${tags.project}-${tags.env}'
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'AllowGatewayManagerInbound'
+        properties: {
+          description: 'Allow Gateway Manager Inbound administrative traffic'
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          destinationPortRange: agw_v2 ? '65200-65535' : '65503-65534'
+          sourceAddressPrefix: 'GatewayManager'
+          destinationAddressPrefix: '*'
+          access: 'Allow'
+          priority: 300
+          direction: 'Inbound'
+        }
+      }
+      {
+        name: 'AllowWebToAppGatewayInbound'
+        properties: {
+          protocol: 'Tcp'
+          sourcePortRange: '*'
+          sourceAddressPrefix: 'Internet'
+          destinationAddressPrefix: vnet_agw.properties.addressPrefix
+          access: 'Allow'
+          priority: 1000
+          direction: 'Inbound'
+          sourcePortRanges: []
+          destinationPortRanges: [
+            '80'
+            '443'
+          ]
+          sourceAddressPrefixes: []
+          destinationAddressPrefixes: []
+        }
+      }
+    ]
+  }
 }
 
 // ------------------------------------------------------------------------------------------------
