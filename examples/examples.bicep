@@ -167,6 +167,8 @@ module DeployAgwOneAppStandardV2 '../main.bicep' = {
     agw_backend_app_names: appA.name
     agw_sku: 'Standard_v2'
     agw_tier: 'Standard_v2'
+    deploy_agw_nsg: true
+    snet_agw_addr: vnetApp.properties.subnets[5].properties.addressPrefix
     snet_agw_id: vnetApp.properties.subnets[5].id
     agw_front_end_ports: '80'
     agw_n: 'agw-DeployAgwOneAppStandardV2'
