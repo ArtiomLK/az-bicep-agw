@@ -75,6 +75,8 @@ var agw_backend_addr_pool_fqdn = [for app_n in app_names_parsed: take('${app_n}.
 var agw_backend_http_setting_names = [for app_n in app_names_parsed: take('${app_n}-backend-http-settings', 80)]
 var agw_rules = [for app_n in app_names_parsed: take('${app_n}-rule', 80)]
 
+var agw_health_probe_names = [for app_n in app_names_parsed: take('${app_n}-health-probe', 80)]
+
 var agw_snet_ip_config_n = 'agw-snet-ip-config'
 var agw_frontend_ip_config_n = 'agw-frontend-ip-config'
 
@@ -197,6 +199,15 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
         backendHttpSettings: {
           id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', agw_n, agw_backend_http_setting_names[i])
         }
+      }
+    }]
+
+    probes: [for i in range(0, length(app_names_parsed)): {
+      name: agw_health_probe_names[i]
+      properties: {
+        protocol: 'Http'
+        pickHostNameFromBackendHttpSettings: true
+        path: '/'
       }
     }]
   }
