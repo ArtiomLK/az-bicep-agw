@@ -168,6 +168,10 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
         protocol: 'Http'
         cookieBasedAffinity: 'Disabled'
         pickHostNameFromBackendAddress: true
+        probeEnabled: true
+        probe: {
+          id: resourceId('Microsoft.Network/applicationGateways/probes', agw_n, agw_health_probe_names[i])
+        }
       }
     }]
 
