@@ -207,6 +207,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
         protocol: 'Http'
         pickHostNameFromBackendHttpSettings: true
         path: '/'
+        timeout: 20
       }
     }]
   }
