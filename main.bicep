@@ -73,9 +73,8 @@ var agw_http_listener_names = [for app_n in app_names_parsed: take('${app_n}-htt
 var agw_backend_addr_pool_names = [for app_n in app_names_parsed: take('${app_n}-backend-addr-pool', 80)]
 var agw_backend_addr_pool_fqdn = [for app_n in app_names_parsed: take('${app_n}.azurewebsites.net', 80)]
 var agw_backend_http_setting_names = [for app_n in app_names_parsed: take('${app_n}-backend-http-settings', 80)]
-var agw_rules = [for app_n in app_names_parsed: take('${app_n}-rule', 80)]
-
 var agw_health_probe_names = [for app_n in app_names_parsed: take('${app_n}-health-probe', 80)]
+var agw_rules = [for app_n in app_names_parsed: take('${app_n}-rule', 80)]
 
 var agw_snet_ip_config_n = 'agw-snet-ip-config'
 var agw_frontend_ip_config_n = 'agw-frontend-ip-config'
