@@ -83,8 +83,18 @@ resource appB 'Microsoft.Web/sites@2018-11-01' = {
     serverFarmId: appServicePlan.id
   }
 }
+
 resource appC 'Microsoft.Web/sites@2018-11-01' = {
   name: take('appC-${guid(subscription().id, resourceGroup().id, tags.env)}', 60)
+  location: location
+  tags: tags
+  properties: {
+    serverFarmId: appServicePlan.id
+  }
+}
+
+resource appN 'Microsoft.Web/sites@2018-11-01' = {
+  name: take('appN-${guid(subscription().id, resourceGroup().id, tags.env)}', 60)
   location: location
   tags: tags
   properties: {
@@ -99,7 +109,7 @@ module DeployAgwOneAppStandardSmall '../main.bicep' = {
   name: 'DeployAgwOneAppStandardSmall'
   params: {
     location: location
-    agw_backend_app_names: appA.name
+    agw_backend_app_names: appN.name
     agw_sku: 'Standard_Small'
     agw_tier: 'Standard'
     snet_agw_id: vnetApp.properties.subnets[0].id
@@ -112,7 +122,7 @@ module DeployAgwOneAppStandardMedium '../main.bicep' = {
   name: 'DeployAgwOneAppStandardMedium'
   params: {
     location: location
-    agw_backend_app_names: appA.name
+    agw_backend_app_names: appN.name
     agw_sku: 'Standard_Medium'
     agw_tier: 'Standard'
     snet_agw_id: vnetApp.properties.subnets[1].id
@@ -125,7 +135,7 @@ module DeployAgwOneAppStandardLarge '../main.bicep' = {
   name: 'DeployAgwOneAppStandardLarge'
   params: {
     location: location
-    agw_backend_app_names: appA.name
+    agw_backend_app_names: appN.name
     agw_sku: 'Standard_Large'
     agw_tier: 'Standard'
     snet_agw_id: vnetApp.properties.subnets[2].id
@@ -138,7 +148,7 @@ module DeployAgwOneAppWAFMedium '../main.bicep' = {
   name: 'DeployAgwOneAppWAFMedium'
   params: {
     location: location
-    agw_backend_app_names: appA.name
+    agw_backend_app_names: appN.name
     agw_sku: 'WAF_Medium'
     agw_tier: 'WAF'
     snet_agw_id: vnetApp.properties.subnets[3].id
@@ -151,7 +161,7 @@ module DeployAgwOneAppWAFLarge '../main.bicep' = {
   name: 'DeployAgwOneAppWAFLarge'
   params: {
     location: location
-    agw_backend_app_names: appA.name
+    agw_backend_app_names: appN.name
     agw_sku: 'WAF_Large'
     agw_tier: 'WAF'
     snet_agw_id: vnetApp.properties.subnets[4].id
@@ -167,7 +177,6 @@ module DeployAgwOneAppStandardV2 '../main.bicep' = {
     agw_backend_app_names: appA.name
     agw_sku: 'Standard_v2'
     agw_tier: 'Standard_v2'
-    snet_agw_addr: vnetApp.properties.subnets[5].properties.addressPrefix
     snet_agw_id: vnetApp.properties.subnets[5].id
     agw_front_end_ports: '80'
     agw_n: 'agw-DeployAgwOneAppStandardV2'
@@ -187,8 +196,8 @@ module DeployAgwOneAppStandardWAFV2 '../main.bicep' = {
   }
 }
 
-module DeployAgwMultiApp '../main.bicep' = {
-  name: 'DeployAgwMultiApp'
+module DeployAgwMultiAppStandardV2 '../main.bicep' = {
+  name: 'DeployAgwMultiAppStandardV2'
   params: {
     location: location
     agw_backend_app_names: '${appA.name},${appB.name},${appC.name}'
@@ -196,12 +205,12 @@ module DeployAgwMultiApp '../main.bicep' = {
     agw_tier: 'Standard_v2'
     snet_agw_id: vnetApp.properties.subnets[7].id
     agw_front_end_ports: '80,8080,8081'
-    agw_n: 'agw-DeployAgwMultiApp'
+    agw_n: 'agw-DeployAgwMultiAppStandardV2'
   }
 }
 
-module DeployAgwMultiAppCustomScaling '../main.bicep' = {
-  name: 'DeployAgwMultiAppCustomScaling'
+module DeployAgwMultiAppStandardV2CustomScaling '../main.bicep' = {
+  name: 'DeployAgwMultiAppStandardV2CustomScaling'
   params: {
     agw_capacity:2
     agw_max_capacity: 32
@@ -211,7 +220,7 @@ module DeployAgwMultiAppCustomScaling '../main.bicep' = {
     agw_tier: 'Standard_v2'
     snet_agw_id: vnetApp.properties.subnets[8].id
     agw_front_end_ports: '80,8080,8081'
-    agw_n: 'agw-DeployAgwMultiAppCustomScaling'
+    agw_n: 'agw-DeployAgwMultiAppStandardV2CustomScaling'
   }
 }
 
