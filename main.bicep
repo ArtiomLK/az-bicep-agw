@@ -212,6 +212,8 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
         pickHostNameFromBackendHttpSettings: true
         path: '/'
         timeout: 20
+        interval: 30
+        unhealthyThreshold: 3
       }
     }]
   }
