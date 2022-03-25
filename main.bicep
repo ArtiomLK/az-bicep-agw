@@ -92,7 +92,7 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
   properties: {
     publicIPAllocationMethod: agw_v2 ? 'Static' : 'Dynamic'
   }
-  zones: agw_enable_zone_redundancy ? [
+  zones: agw_enable_zone_redundancy && agw_v2 ? [
     '1'
     '2'
     '3'
@@ -106,7 +106,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
   name: agw_n
   tags: tags
   location: location
-  zones: agw_enable_zone_redundancy ? [
+  zones: agw_enable_zone_redundancy && agw_v2 ? [
     '1'
     '2'
     '3'
