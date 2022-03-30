@@ -10,7 +10,7 @@
 | location                   | Az Resources deployment location. To get Az regions run `az account list-locations -o table` | string [default: rg location] | `eastus` \| `centralus` \| `westus` \| `westus2` \| `southcentralus`                                                  |
 | agw_n                      | Application Gateway Name                                                                     | string [required]             |                                                                                                                       |
 | agw_enable_autoscaling     | Application Gateway Enable Autoscaling. Standard_v2 & WAF_V2 supports autoscaling            | string [default: `false`]     | `true` \| `false`                                                                                                     |
-| agw_enable_zone_redundancy | Application Gateway Enable Zone Redundancy Flag                                              | string [default: `true`]      | `true` \| `false`                                                                                                     |
+| agw_enable_zone_redundancy | Application Gateway Enable Zone Redundancy Flag                                              | string [required]             | `true` \| `false`                                                                                                     |
 | agw_sku                    | Application Gateway sku size                                                                 | string [required]             | `Standard_Small` \| `Standard_Medium` \| `Standard_Large` \| `WAF_Medium` \| `WAF_Large` \| `Standard_v2` \| `WAF_v2` |
 | agw_tier                   | Application Gateway tier type                                                                | string [required]             | `Standard` \| `WAF` \| `Standard_v2` \| `WAF_v2`                                                                      |
 | agw_capacity               | Application Gateway initial capacity                                                         | int [default: `1`]            |                                                                                                                       |
@@ -40,11 +40,13 @@ Application Gateway Combinations:
   - SKU Tier:
     - `Standard_v2`
   - agw_enable_autoscaling available
+  - agw_enable_zone_redundancy available
   - agw_capacity: [0,125]
 - `WAF_v2`
   - SKU Tier:
     - `WAF_v2`
   - agw_enable_autoscaling available
+  - agw_enable_zone_redundancy available
   - agw_capacity: [0,125]
 
 ### [Reference Examples][1]

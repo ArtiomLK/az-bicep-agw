@@ -16,7 +16,7 @@ param agw_pip_n string ='pip-${agw_n}'
 param agw_n string
 
 @description('Applicaton Gateway Enable Zone Redundancy Flag')
-param agw_enable_zone_redundancy bool = true
+param agw_enable_zone_redundancy bool
 
 @description('Application Gateway sku size')
 @allowed([
