@@ -220,3 +220,4 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
 }
 
 output id string = applicationGateway.id
+output pip_ip string = publicIpAddress.properties.ipAddress
