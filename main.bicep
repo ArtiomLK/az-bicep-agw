@@ -16,7 +16,7 @@ param agw_pip_n string ='pip-${agw_n}'
 param agw_n string
 
 @description('Applicaton Gateway Enable Zone Redundancy Flag')
-param agw_enable_zone_redundancy bool = false
+param agw_enable_zone_redundancy bool
 
 @description('Application Gateway sku size')
 @allowed([
@@ -92,7 +92,7 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2021-03-01' = {
   properties: {
     publicIPAllocationMethod: agw_v2 ? 'Static' : 'Dynamic'
   }
-  zones: agw_enable_zone_redundancy ? [
+  zones: agw_enable_zone_redundancy && agw_v2 ? [
     '1'
     '2'
     '3'
@@ -106,7 +106,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
   name: agw_n
   tags: tags
   location: location
-  zones: agw_enable_zone_redundancy ? [
+  zones: agw_enable_zone_redundancy && agw_v2 ? [
     '1'
     '2'
     '3'
@@ -220,3 +220,4 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2021-05-01' =
 }
 
 output id string = applicationGateway.id
+output pip_ip string =  publicIpAddress.properties.publicIPAllocationMethod == 'Static' ? publicIpAddress.properties.ipAddress : ''
