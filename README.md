@@ -40,11 +40,13 @@ Application Gateway Combinations:
   - SKU Tier:
     - `Standard_v2`
   - agw_enable_autoscaling available
+  - agw_enable_zone_redundancy available
   - agw_capacity: [0,125]
 - `WAF_v2`
   - SKU Tier:
     - `WAF_v2`
   - agw_enable_autoscaling available
+  - agw_enable_zone_redundancy available
   - agw_capacity: [0,125]
 
 ### [Reference Examples][1]
