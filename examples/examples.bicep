@@ -185,6 +185,7 @@ module DeployAgwOneAppStandardV2 '../main.bicep' = {
     snet_agw_id: vnetApp.properties.subnets[5].id
     agw_front_end_ports: '80'
     agw_n: 'agw-DeployAgwOneAppStandardV2'
+    agw_enable_zone_redundancy: false
   }
 }
 
@@ -198,6 +199,7 @@ module DeployAgwOneAppStandardWAFV2 '../main.bicep' = {
     snet_agw_id: vnetApp.properties.subnets[6].id
     agw_front_end_ports: '80'
     agw_n: 'agw-DeployAgwOneAppStandardWAFV2'
+    agw_enable_zone_redundancy: true
   }
 }
 
@@ -211,6 +213,7 @@ module DeployAgwMultiAppStandardV2 '../main.bicep' = {
     snet_agw_id: vnetApp.properties.subnets[7].id
     agw_front_end_ports: '80,8080,8081'
     agw_n: 'agw-DeployAgwMultiAppStandardV2'
+    agw_enable_zone_redundancy: true
   }
 }
 
@@ -226,6 +229,7 @@ module DeployAgwMultiAppStandardV2CustomScaling '../main.bicep' = {
     snet_agw_id: vnetApp.properties.subnets[8].id
     agw_front_end_ports: '80,8080,8081'
     agw_n: 'agw-DeployAgwMultiAppStandardV2CustomScaling'
+    agw_enable_zone_redundancy: true
   }
 }
 
