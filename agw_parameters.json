@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "tags": {
+      "value": {
+        "project": "my-agw-project",
+        "env": "prod"
+      }
+    },
+    "location": {
+      "value": "eastus2"
+    },
+    "agw_backend_app_names": {
+      "value": "appA,appB,appC"
+    },
+    "agw_enable_zone_redundancy": {
+      "value": true
+    },
+    "agw_front_end_ports": {
+      "value": "80,8080,8081"
+    },
+    "agw_n": {
+      "value": "agw-project"
+    },
+    "agw_sku": {
+      "value": "Standard_v2"
+    },
+    "agw_tier": {
+      "value": "Standard_v2"
+    },
+    "snet_agw_id": {
+      "value": "/subscriptions/########-####-####-####-############/resourceGroups/rg-azure-bicep-application-gateway/providers/Microsoft.Network/virtualNetworks/vnet-azure-bicep-app-service/subnets/snet-2-agw-azure-bicep"
+    }
+  }
+}

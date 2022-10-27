@@ -8,7 +8,7 @@ var tags = {
   env: 'dev'
 }
 
-param location string = 'eastus'
+param location string = 'eastus2'
 // Sample App Service Plan parameters
 param plan_enable_zone_redundancy bool = false
 
@@ -31,7 +31,7 @@ var subnets = [ for i in range(0, snet_count) : {
   }]
 
 resource vnetApp 'Microsoft.Network/virtualNetworks@2021-02-01' = {
-  name: 'vnet-azure-bicep-app-service'
+  name: 'vnet-test'
   location: location
   tags: tags
   properties: {
@@ -54,7 +54,7 @@ resource vnetApp 'Microsoft.Network/virtualNetworks@2021-02-01' = {
 // Create a Windows Sample App Service Plan
 resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   tags: tags
-  name: 'plan-azure-bicep-app-service-test'
+  name: 'plan-test'
   location: location
   sku: {
     name: 'P1V3'

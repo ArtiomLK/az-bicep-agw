@@ -53,20 +53,45 @@ Application Gateway Combinations:
 
 ### [Reference Examples][1]
 
-## Locally test Azure Bicep Modules
+## Deploy AGW Bicep Template
+
+### Locally Deploy Azure Bicep Modules
 
 ```bash
-# Create an Azure Resource Group
+# *Create a Sample RG if required
 az group create \
 --name 'rg-azure-bicep-application-gateway' \
 --location 'eastus2' \
 --tags project=bicephub env=dev
 
-# Deploy Sample Modules
+# Deploy AGW
 az deployment group create \
 --resource-group 'rg-azure-bicep-application-gateway' \
---mode Complete \
+--mode Incremental \
 --template-file examples/examples.bicep
+```
+
+### Deploy Azure Bicep Modules from Public Repo
+
+```bash
+# *Create a sample RG if required
+az group create \
+--name 'rg-azure-bicep-application-gateway' \
+--location 'eastus2' \
+--tags project=bicephub env=dev
+
+# download bicep template file
+curl -o agw_template.bicep https://raw.githubusercontent.com/ArtiomLK/azure-reliability-architecture/main/agw_template.bicep
+
+# download bicep parameters file
+curl -o agw_parameters.json https://raw.githubusercontent.com/ArtiomLK/azure-reliability-architecture/main/agw_parameters.bicep
+
+# Deploy AGW
+az deployment group create \
+--resource-group 'rg-azure-bicep-application-gateway' \
+--mode Incremental \
+--template-file agw_template.bicep \
+--parameters @agw_parameters.json
 ```
 
 [1]: ./examples/examples.bicep
