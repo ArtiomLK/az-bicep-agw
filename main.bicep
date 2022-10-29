@@ -148,8 +148,10 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-05-01' =
     ], !empty(agw_priv_ip_addr) ? [{
         name: agw_frontend_priv_ip_config_n
         properties: {
-          publicIPAddress: {
-            id: agw_priv_ip_addr
+          privateIPAddress: agw_priv_ip_addr
+          privateIPAllocationMethod: agw_v2 ? 'Static' : 'Dynamic'
+          subnet: {
+            id: snet_agw_id
           }
         }
       }] : []
