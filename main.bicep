@@ -136,7 +136,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-05-01' =
       }
     ]
 
-    frontendIPConfigurations: [
+    frontendIPConfigurations: concat([
       {
         name: agw_frontend_pub_ip_config_n
         properties: {
@@ -145,15 +145,15 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-05-01' =
           }
         }
       }
-      !empty(agw_priv_ip_addr) ? {
+    ], !empty(agw_priv_ip_addr) ? [{
         name: agw_frontend_priv_ip_config_n
         properties: {
           publicIPAddress: {
             id: agw_priv_ip_addr
           }
         }
-      } : {}
-    ]
+      }] : []
+    )
 
     frontendPorts: [for i in range(0, length(app_names_parsed)): {
       name: agw_front_end_port_names[i]

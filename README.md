@@ -94,4 +94,13 @@ az deployment group create \
 --parameters @agw_parameters.json
 ```
 
+## Additional Resources
+
+- Application Gateway
+- Bicep IaC
+- [MS | Docs | Microsoft.Network applicationGateways][2]
+- [MS | Docs | Microsoft.Network publicIPAddresses][3]
+
 [1]: ./examples/examples.bicep
+[2]: https://learn.microsoft.com/en-us/azure/templates/microsoft.network/publicipaddresses
+[3]: https://learn.microsoft.com/en-us/azure/templates/microsoft.network/applicationgateways
