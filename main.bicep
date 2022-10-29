@@ -84,6 +84,13 @@ var agw_ip_config_n = 'appGatewayIpConfig'
 var agw_frontend_pub_ip_config_n = 'appGwPublicFrontendIp'
 var agw_frontend_priv_ip_config_n = 'appGwPrivateFrontendIp'
 
+param firewallPolicyManagedRuleSets array = [
+  {
+    ruleSetType: 'OWASP'
+    ruleSetVersion: '3.2'
+  }
+]
+
 // ------------------------------------------------------------------------------------------------
 // Deploy PIP
 // ------------------------------------------------------------------------------------------------
@@ -110,6 +117,11 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-05-01' = {
 resource firewallPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2021-03-01' = if (agw_waf_v2_enabled) {
   name: 'policy-${agw_n}' // placeholder value required as name cannot be empty/null when enableWebApplicationFirewall equals false
   location: location
+  properties: {
+    managedRules: {
+      managedRuleSets: firewallPolicyManagedRuleSets
+    }
+  }
 }
 
 // ------------------------------------------------------------------------------------------------
