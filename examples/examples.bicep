@@ -245,7 +245,7 @@ module DeployAgwMultiAppStandardV2CustomScalingPrivIp '../main.bicep' = {
     snet_agw_id: vnetApp.properties.subnets[9].id
     agw_priv_ip_addr: '192.160.9.4'
     agw_front_end_ports: '80,8080,8081'
-    agw_n: 'agw-DeployAgwMultiAppStandardV2CustomScaling'
+    agw_n: 'agw-DeployAgwMultiAppStandardV2CustomScalingPrivIp'
     agw_enable_zone_redundancy: true
   }
 }
