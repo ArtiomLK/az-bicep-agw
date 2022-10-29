@@ -12,8 +12,8 @@ param agw_sku string
 param agw_tier string
 param snet_agw_id string
 
-module agw 'br:bicephubdev.azurecr.io/bicep/modules/agw:55880643432f21c1abdcd4ef9f506ee0b25f7616' = {
-  name: take('agw-${guid(subscription().id, resourceGroup().id)}', 64)
+module agw 'br:bicephubdev.azurecr.io/bicep/modules/agw:1358c8217681d4c5092bb3b0f3f8f23692364346' = {
+  name: take('${agw_n}-${guid(subscription().id, resourceGroup().id)}', 64)
   params: {
     location: location
     agw_backend_app_names: agw_backend_app_names
