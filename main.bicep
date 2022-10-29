@@ -205,9 +205,9 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-05-01' =
 
     requestRoutingRules: [for i in range(0, length(app_names_parsed)): {
       name: agw_rules[i]
-      properties: {
+      properties: union({
         ruleType: 'Basic'
-        priority: (i+1) * 100
+        priority: agw_v2 ? ((i+1) * 100) : null
         httpListener: {
           id: resourceId('Microsoft.Network/applicationGateways/httpListeners', agw_n, agw_http_listener_names[i])
         }
@@ -217,7 +217,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-05-01' =
         backendHttpSettings: {
           id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', agw_n, agw_backend_http_setting_names[i])
         }
-      }
+      },  agw_v2 ? { priority: ((i+1) * 100)} : {})
     }]
 
     probes: [for i in range(0, length(app_names_parsed)): {
