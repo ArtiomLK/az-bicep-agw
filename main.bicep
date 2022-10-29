@@ -39,6 +39,7 @@ param agw_sku string
 ])
 param agw_tier string
 var agw_v2 = agw_tier == 'Standard_v2' || agw_tier ==  'WAF_v2'
+var agw_waf_v2_enabled = agw_tier ==  'WAF_v2'
 
 @description('Application Gateway Enable Autoscaling. Standard_v2 & WAF_V2 supports autoscaling')
 param agw_enable_autoscaling bool = false
@@ -101,6 +102,14 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-05-01' = {
     '2'
     '3'
   ] : []
+}
+
+// ------------------------------------------------------------------------------------------------
+// Deploy Application Gateway WAF policy
+// ------------------------------------------------------------------------------------------------
+resource firewallPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2021-03-01' = if (agw_waf_v2_enabled) {
+  name: 'policy-${agw_n}' // placeholder value required as name cannot be empty/null when enableWebApplicationFirewall equals false
+  location: location
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -231,6 +240,10 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-05-01' =
         unhealthyThreshold: 3
       }
     }]
+
+    firewallPolicy: agw_waf_v2_enabled ? {
+      id: firewallPolicy.id
+    } : null
   }
 }
 
