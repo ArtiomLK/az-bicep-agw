@@ -39,7 +39,7 @@ param agw_sku string
 ])
 param agw_tier string
 var agw_v2 = agw_tier == 'Standard_v2' || agw_tier ==  'WAF_v2'
-var agw_waf_v2_enabled = agw_tier ==  'WAF_v2'
+var agw_enable_waf_v2 = agw_tier ==  'WAF_v2'
 
 @description('Application Gateway Enable Autoscaling. Standard_v2 & WAF_V2 supports autoscaling')
 param agw_enable_autoscaling bool = false
@@ -114,8 +114,8 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-05-01' = {
 // ------------------------------------------------------------------------------------------------
 // Deploy Application Gateway WAF policy
 // ------------------------------------------------------------------------------------------------
-resource firewallPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2021-03-01' = if (agw_waf_v2_enabled) {
-  name: 'policy-${agw_n}' // placeholder value required as name cannot be empty/null when enableWebApplicationFirewall equals false
+resource firewallPolicy 'Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies@2021-03-01' = if (agw_enable_waf_v2) {
+  name: 'policy-${agw_n}'
   location: location
   properties: {
     managedRules: {
@@ -253,7 +253,7 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-05-01' =
       }
     }]
 
-    firewallPolicy: agw_waf_v2_enabled ? {
+    firewallPolicy: agw_enable_waf_v2 ? {
       id: firewallPolicy.id
     } : null
   }

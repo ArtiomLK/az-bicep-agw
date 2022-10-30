@@ -83,6 +83,8 @@ az group create \
 # download bicep template file
 curl -o agw_template.bicep https://raw.githubusercontent.com/ArtiomLK/azure-reliability-architecture/main/agw_template.bicep
 
+# Update to latest commit 
+
 # download bicep parameters file
 curl -o agw_parameters.json https://raw.githubusercontent.com/ArtiomLK/azure-reliability-architecture/main/agw_parameters.bicep
 

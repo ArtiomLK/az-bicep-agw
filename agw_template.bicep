@@ -11,8 +11,9 @@ param agw_front_end_ports string
 param agw_sku string
 param agw_tier string
 param snet_agw_id string
+param agw_priv_ip_addr string = ''
 
-module agw 'br:bicephubdev.azurecr.io/bicep/modules/agw:1358c8217681d4c5092bb3b0f3f8f23692364346' = {
+module agw 'br:bicephubdev.azurecr.io/bicep/modules/agw:cf59d3f7f1e606880a6830202af12a21fefa0a08' = {
   name: take('${agw_n}-${guid(subscription().id, resourceGroup().id)}', 64)
   params: {
     location: location
@@ -23,6 +24,7 @@ module agw 'br:bicephubdev.azurecr.io/bicep/modules/agw:1358c8217681d4c5092bb3b0
     agw_sku: agw_sku
     agw_tier: agw_tier
     snet_agw_id: snet_agw_id
+    agw_priv_ip_addr: agw_priv_ip_addr
     tags: tags
   }
 }
