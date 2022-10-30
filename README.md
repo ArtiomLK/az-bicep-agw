@@ -83,6 +83,8 @@ az group create \
 # download bicep template file
 curl -o agw_template.bicep https://raw.githubusercontent.com/ArtiomLK/azure-reliability-architecture/main/agw_template.bicep
 
+# Update to latest commit by replacing main module ref tag
+
 # download bicep parameters file
 curl -o agw_parameters.json https://raw.githubusercontent.com/ArtiomLK/azure-reliability-architecture/main/agw_parameters.bicep
 
@@ -94,4 +96,13 @@ az deployment group create \
 --parameters @agw_parameters.json
 ```
 
+## Additional Resources
+
+- Application Gateway
+- Bicep IaC
+- [MS | Docs | Microsoft.Network applicationGateways][2]
+- [MS | Docs | Microsoft.Network publicIPAddresses][3]
+
 [1]: ./examples/examples.bicep
+[2]: https://learn.microsoft.com/en-us/azure/templates/microsoft.network/publicipaddresses
+[3]: https://learn.microsoft.com/en-us/azure/templates/microsoft.network/applicationgateways
