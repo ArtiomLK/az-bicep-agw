@@ -99,6 +99,7 @@ az deployment group create \
 ## Additional Resources
 
 - Application Gateway
+- [MS | Docs | Application Gateway infrastructure configuration][4]
 - Bicep IaC
 - [MS | Docs | Microsoft.Network applicationGateways][2]
 - [MS | Docs | Microsoft.Network publicIPAddresses][3]
@@ -106,3 +107,4 @@ az deployment group create \
 [1]: ./examples/examples.bicep
 [2]: https://learn.microsoft.com/en-us/azure/templates/microsoft.network/publicipaddresses
 [3]: https://learn.microsoft.com/en-us/azure/templates/microsoft.network/applicationgateways
+[4]: https://learn.microsoft.com/en-us/azure/application-gateway/configuration-infrastructure
