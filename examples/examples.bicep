@@ -220,6 +220,7 @@ module DeployAgwMultiAppStandardV2 '../main.bicep' = {
 module DeployAgwMultiAppStandardV2CustomScaling '../main.bicep' = {
   name: 'DeployAgwMultiAppStandardV2CustomScaling'
   params: {
+    agw_enable_autoscaling: true
     agw_capacity:2
     agw_max_capacity: 32
     location: location
@@ -236,8 +237,9 @@ module DeployAgwMultiAppStandardV2CustomScaling '../main.bicep' = {
 module DeployAgwMultiAppStandardV2CustomScalingPrivIp '../main.bicep' = {
   name: 'DeployAgwMultiAppStandardV2CustomScalingPrivIp'
   params: {
-    agw_capacity:3
-    agw_max_capacity: 10
+    agw_enable_autoscaling: true
+    agw_capacity:0
+    agw_max_capacity: 125
     location: location
     agw_backend_app_names: '${appA.name},${appB.name},${appC.name}'
     agw_sku: 'Standard_v2'
