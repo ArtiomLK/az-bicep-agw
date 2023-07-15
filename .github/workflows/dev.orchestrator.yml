@@ -1,37 +1,25 @@
 on:
   workflow_dispatch: {}
   push:
-    paths-ignore:
-      - '**.md'
+    paths:
+      - '!**.md'
+      - '.github/workflows/dev.orchestrator.yml'
+      - 'examples/examples.bicep'
+      - 'modules/**'
+      - 'main.bicep'
 
-env:
-  ACR_MODULE_N: agw
-  RG_N: rg-azure-bicep-application-gateway
-
-name: DEV - Deploy Azure Resource
+name: Deploy Bicep Modules to AZ and ACR
 jobs:
-  deploy_to_dev:
-    runs-on: ubuntu-latest
-    environment: dev
-    steps:
-      # Checkout code
-    - uses: actions/checkout@v2
-
-      # Log into Azure
-    - uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      # Test Azure Resource Deployment
-    - uses: ./.github/actions/deploy-az-resource
-      with:
-        az_rg_n: ${{ env.RG_N }}
-
-      # Deploy Resource to ACR
-    - uses: azure/docker-login@v1
-      with:
-        username: ${{ secrets.ACR_USERNAME }}
-        password: ${{ secrets.ACR_PASSWORD }}
-    - run: |
-        az bicep build --file main.bicep
-        az bicep publish --file main.bicep --target br:${{ secrets.ACR_LOGIN_SERVER }}/bicep/modules/$ACR_MODULE_N:${{ github.sha }}
+  deploy-bicep-module-to-az-and-acr:
+    uses: ArtiomLK/commands/.github/workflows/deploy-bicep-module-to-acr.yaml@main
+    with:
+      ENVIRONMENT: ${{ vars.ENVIRONMENT_STAGE }}
+      ACR_MODULE_N: ${{ vars.ACR_MODULE_N }}
+      RG_N: ${{ vars.RG_N }}
+      MAIN_BICEP_FILE_PATH: ${{ vars.MAIN_BICEP_FILE_PATH }}
+      TEST_BICEP_FILE_FILE: ${{ vars.EXAMPLE_BICEP_FILE_PATH }}
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+      ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+      ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
