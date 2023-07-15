@@ -8,15 +8,7 @@ var tags = {
   env: 'dev'
 }
 
-param location string = 'eastus2'
-// Sample App Service Plan parameters
-param plan_enable_zone_redundancy bool = false
-
-// ------------------------------------------------------------------------------------------------
-// REPLACE
-// '../main.bicep' by the ref with your version, for example:
-// 'br:bicephubdev.azurecr.io/bicep/modules/plan:v1'
-// ------------------------------------------------------------------------------------------------
+param location string = 'eastus'
 
 // ------------------------------------------------------------------------------------------------
 // Applciation Gateway Networking Configurations Examples
@@ -30,8 +22,8 @@ var subnets = [ for i in range(0, snet_count) : {
     delegations: []
   }]
 
-resource vnetApp 'Microsoft.Network/virtualNetworks@2021-02-01' = {
-  name: 'vnet-test'
+resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
+  name: 'vnet-agw'
   location: location
   tags: tags
   properties: {
@@ -57,12 +49,8 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2021-03-01' = {
   name: 'plan-test'
   location: location
   sku: {
-    name: 'P1V3'
-    tier: 'PremiumV3'
-    capacity: plan_enable_zone_redundancy ? 3 : 1
-  }
-  properties: {
-    zoneRedundant: plan_enable_zone_redundancy
+    name: 'S1'
+    tier: 'Standard'
   }
 }
 
@@ -112,7 +100,7 @@ module DeployAgwOneAppStandardSmall '../main.bicep' = {
     agw_backend_app_names: appN.name
     agw_sku: 'Standard_Small'
     agw_tier: 'Standard'
-    snet_agw_id: vnetApp.properties.subnets[0].id
+    snet_agw_id: vnet.properties.subnets[0].id
     agw_front_end_ports: '80'
     agw_n: 'agw-DeployAgwOneAppStandardSmall'
     agw_enable_zone_redundancy: false
@@ -126,7 +114,7 @@ module DeployAgwOneAppStandardMedium '../main.bicep' = {
     agw_backend_app_names: appN.name
     agw_sku: 'Standard_Medium'
     agw_tier: 'Standard'
-    snet_agw_id: vnetApp.properties.subnets[1].id
+    snet_agw_id: vnet.properties.subnets[1].id
     agw_front_end_ports: '80'
     agw_n: 'agw-DeployAgwOneAppStandardMedium'
     agw_enable_zone_redundancy: false
@@ -140,7 +128,7 @@ module DeployAgwOneAppStandardLarge '../main.bicep' = {
     agw_backend_app_names: appN.name
     agw_sku: 'Standard_Large'
     agw_tier: 'Standard'
-    snet_agw_id: vnetApp.properties.subnets[2].id
+    snet_agw_id: vnet.properties.subnets[2].id
     agw_front_end_ports: '80'
     agw_n: 'agw-DeployAgwOneAppStandardLarge'
     agw_enable_zone_redundancy: false
@@ -154,7 +142,7 @@ module DeployAgwOneAppWAFMedium '../main.bicep' = {
     agw_backend_app_names: appN.name
     agw_sku: 'WAF_Medium'
     agw_tier: 'WAF'
-    snet_agw_id: vnetApp.properties.subnets[3].id
+    snet_agw_id: vnet.properties.subnets[3].id
     agw_front_end_ports: '80'
     agw_n: 'agw-DeployAgwOneAppWAFMedium'
     agw_enable_zone_redundancy: false
@@ -168,7 +156,7 @@ module DeployAgwOneAppWAFLarge '../main.bicep' = {
     agw_backend_app_names: appN.name
     agw_sku: 'WAF_Large'
     agw_tier: 'WAF'
-    snet_agw_id: vnetApp.properties.subnets[4].id
+    snet_agw_id: vnet.properties.subnets[4].id
     agw_front_end_ports: '80'
     agw_n: 'agw-DeployAgwOneAppWAFLarge'
     agw_enable_zone_redundancy: false
@@ -182,7 +170,7 @@ module DeployAgwOneAppStandardV2 '../main.bicep' = {
     agw_backend_app_names: appA.name
     agw_sku: 'Standard_v2'
     agw_tier: 'Standard_v2'
-    snet_agw_id: vnetApp.properties.subnets[5].id
+    snet_agw_id: vnet.properties.subnets[5].id
     agw_front_end_ports: '80'
     agw_n: 'agw-DeployAgwOneAppStandardV2'
     agw_enable_zone_redundancy: false
@@ -196,7 +184,7 @@ module DeployAgwOneAppStandardWAFV2 '../main.bicep' = {
     agw_backend_app_names: appA.name
     agw_sku: 'WAF_v2'
     agw_tier: 'WAF_v2'
-    snet_agw_id: vnetApp.properties.subnets[6].id
+    snet_agw_id: vnet.properties.subnets[6].id
     agw_front_end_ports: '80'
     agw_n: 'agw-DeployAgwOneAppStandardWAFV2'
     agw_enable_zone_redundancy: true
@@ -210,7 +198,7 @@ module DeployAgwMultiAppStandardV2 '../main.bicep' = {
     agw_backend_app_names: '${appA.name},${appB.name},${appC.name}'
     agw_sku: 'Standard_v2'
     agw_tier: 'Standard_v2'
-    snet_agw_id: vnetApp.properties.subnets[7].id
+    snet_agw_id: vnet.properties.subnets[7].id
     agw_front_end_ports: '80,8080,8081'
     agw_n: 'agw-DeployAgwMultiAppStandardV2'
     agw_enable_zone_redundancy: true
@@ -227,7 +215,7 @@ module DeployAgwMultiAppStandardV2CustomScaling '../main.bicep' = {
     agw_backend_app_names: '${appA.name},${appB.name},${appC.name}'
     agw_sku: 'Standard_v2'
     agw_tier: 'Standard_v2'
-    snet_agw_id: vnetApp.properties.subnets[8].id
+    snet_agw_id: vnet.properties.subnets[8].id
     agw_front_end_ports: '80,8080,8081'
     agw_n: 'agw-DeployAgwMultiAppStandardV2CustomScaling'
     agw_enable_zone_redundancy: true
@@ -244,7 +232,7 @@ module DeployAgwMultiAppStandardV2CustomScalingPrivIp '../main.bicep' = {
     agw_backend_app_names: '${appA.name},${appB.name},${appC.name}'
     agw_sku: 'Standard_v2'
     agw_tier: 'Standard_v2'
-    snet_agw_id: vnetApp.properties.subnets[9].id
+    snet_agw_id: vnet.properties.subnets[9].id
     agw_priv_ip_addr: '192.160.9.4'
     agw_front_end_ports: '80,8080,8081'
     agw_n: 'agw-DeployAgwMultiAppStandardV2CustomScalingPrivIp'
