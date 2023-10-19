@@ -96,10 +96,14 @@ az deployment group create \
 --parameters @agw_parameters.json
 ```
 
+### Troubleshot Guides
+
+- [MS | If the backend health is shown as Unknown | Connection Troubleshoot][5]
+
 ## Additional Resources
 
 - Application Gateway
-- [MS | Docs | Application Gateway infrastructure configuration][4]
+- [MS | Docs | Application Gateway infrastructure configuration][5]
 - Bicep IaC
 - [MS | Docs | Microsoft.Network applicationGateways][2]
 - [MS | Docs | Microsoft.Network publicIPAddresses][3]
@@ -108,3 +112,4 @@ az deployment group create \
 [2]: https://learn.microsoft.com/en-us/azure/templates/microsoft.network/publicipaddresses
 [3]: https://learn.microsoft.com/en-us/azure/templates/microsoft.network/applicationgateways
 [4]: https://learn.microsoft.com/en-us/azure/application-gateway/configuration-infrastructure
+[5]: https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-backend-health-troubleshooting#other-reasons
