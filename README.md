@@ -103,7 +103,7 @@ az deployment group create \
 ## Additional Resources
 
 - Application Gateway
-- [MS | Docs | Application Gateway infrastructure configuration][5]
+- [MS | Docs | Application Gateway infrastructure configuration][4]
 - Bicep IaC
 - [MS | Docs | Microsoft.Network applicationGateways][2]
 - [MS | Docs | Microsoft.Network publicIPAddresses][3]
