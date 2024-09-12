@@ -18,8 +18,10 @@ jobs:
       RG_N: ${{ vars.RG_N }}
       MAIN_BICEP_FILE_PATH: ${{ vars.MAIN_BICEP_FILE_PATH }}
       TEST_BICEP_FILE_FILE: ${{ vars.EXAMPLE_BICEP_FILE_PATH }}
+      LOCATION: ${{ vars.LOCATION }}
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      AZURE_CREDENTIALS_ACR: ${{ secrets.AZURE_CREDENTIALS_ACR }}
       ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
       ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
       ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
