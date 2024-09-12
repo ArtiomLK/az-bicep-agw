@@ -10,7 +10,7 @@ param location string
 // AGW Configuration parameters
 // ------------------------------------------------------------------------------------------------
 @description('Application Gateway Public Ip Name')
-param agw_pip_n string ='pip-${agw_n}'
+param agw_pip_n string = 'pip-${agw_n}'
 
 @description('Application Gateway Name')
 param agw_n string
@@ -38,8 +38,8 @@ param agw_sku string
   'WAF_v2'
 ])
 param agw_tier string
-var agw_v2 = agw_tier == 'Standard_v2' || agw_tier ==  'WAF_v2'
-var agw_enable_waf_v2 = agw_tier ==  'WAF_v2'
+var agw_v2 = agw_tier == 'Standard_v2' || agw_tier == 'WAF_v2'
+var agw_enable_waf_v2 = agw_tier == 'WAF_v2'
 
 @description('Application Gateway Enable Autoscaling. Standard_v2 & WAF_V2 supports autoscaling')
 param agw_enable_autoscaling bool = false
@@ -47,11 +47,10 @@ param agw_enable_autoscaling bool = false
 @description('Application Gateway initial capacity')
 @minValue(0)
 @maxValue(124)
-param agw_capacity int = 1
-var agw_min_capacity = (!agw_v2 &&  agw_capacity == 0) ? 1 : agw_capacity
-
+param agw_capacity int = 0
+var agw_min_capacity = agw_enable_autoscaling ? agw_capacity : (agw_capacity == 0) ? 1 : agw_capacity
 @description('Application Gateway Maximum capacity')
-@minValue(0)
+@minValue(2)
 @maxValue(125)
 param agw_max_capacity int = 10
 
@@ -104,11 +103,13 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-05-01' = {
   properties: {
     publicIPAllocationMethod: agw_v2 ? 'Static' : 'Dynamic'
   }
-  zones: agw_enable_zone_redundancy && agw_v2 ? [
-    '1'
-    '2'
-    '3'
-  ] : []
+  zones: agw_enable_zone_redundancy && agw_v2
+    ? [
+        '1'
+        '2'
+        '3'
+      ]
+    : []
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -131,21 +132,25 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-05-01' =
   name: agw_n
   tags: tags
   location: location
-  zones: agw_enable_zone_redundancy && agw_v2 ? [
-    '1'
-    '2'
-    '3'
-  ] : []
+  zones: agw_enable_zone_redundancy && agw_v2
+    ? [
+        '1'
+        '2'
+        '3'
+      ]
+    : []
   properties: {
     sku: {
       name: agw_sku
       tier: agw_tier
       capacity: agw_enable_autoscaling ? null : agw_min_capacity
     }
-    autoscaleConfiguration: agw_enable_autoscaling ? {
-      minCapacity: agw_min_capacity
-      maxCapacity: agw_max_capacity
-    } : null
+    autoscaleConfiguration: agw_enable_autoscaling
+      ? {
+          minCapacity: agw_min_capacity
+          maxCapacity: agw_min_capacity > agw_max_capacity ? agw_min_capacity == 124 ? 125 : agw_min_capacity + 2 : agw_max_capacity
+        }
+      : null
     gatewayIPConfigurations: [
       {
         name: agw_ip_config_n
@@ -157,107 +162,144 @@ resource applicationGateway 'Microsoft.Network/applicationGateways@2022-05-01' =
       }
     ]
 
-    frontendIPConfigurations: concat([
-      {
-        name: agw_frontend_pub_ip_config_n
-        properties: {
-          publicIPAddress: {
-            id: publicIpAddress.id
+    frontendIPConfigurations: concat(
+      [
+        {
+          name: agw_frontend_pub_ip_config_n
+          properties: {
+            publicIPAddress: {
+              id: publicIpAddress.id
+            }
           }
         }
-      }
-    ], !empty(agw_priv_ip_addr) ? [{
-        name: agw_frontend_priv_ip_config_n
-        properties: {
-          privateIPAddress: agw_priv_ip_addr
-          privateIPAllocationMethod: agw_v2 ? 'Static' : 'Dynamic'
-          subnet: {
-            id: snet_agw_id
-          }
-        }
-      }] : []
+      ],
+      !empty(agw_priv_ip_addr)
+        ? [
+            {
+              name: agw_frontend_priv_ip_config_n
+              properties: {
+                privateIPAddress: agw_priv_ip_addr
+                privateIPAllocationMethod: agw_v2 ? 'Static' : 'Dynamic'
+                subnet: {
+                  id: snet_agw_id
+                }
+              }
+            }
+          ]
+        : []
     )
 
-    frontendPorts: [for i in range(0, length(app_names_parsed)): {
-      name: agw_front_end_port_names[i]
-      properties: {
-        port: int(agw_front_end_ports_parsed[i])
+    frontendPorts: [
+      for i in range(0, length(app_names_parsed)): {
+        name: agw_front_end_port_names[i]
+        properties: {
+          port: int(agw_front_end_ports_parsed[i])
+        }
       }
-    }]
+    ]
 
-    backendAddressPools: [for i in range(0, length(app_names_parsed)): {
-      name: agw_backend_addr_pool_names[i]
-      properties: {
-        backendAddresses: [
-          {
-            fqdn: agw_backend_addr_pool_fqdn[i]
+    backendAddressPools: [
+      for i in range(0, length(app_names_parsed)): {
+        name: agw_backend_addr_pool_names[i]
+        properties: {
+          backendAddresses: [
+            {
+              fqdn: agw_backend_addr_pool_fqdn[i]
+            }
+          ]
+        }
+      }
+    ]
+
+    backendHttpSettingsCollection: [
+      for i in range(0, length(app_names_parsed)): {
+        name: agw_backend_http_setting_names[i]
+        properties: {
+          port: 80
+          protocol: 'Http'
+          cookieBasedAffinity: 'Disabled'
+          pickHostNameFromBackendAddress: true
+          probeEnabled: true
+          probe: {
+            id: resourceId('Microsoft.Network/applicationGateways/probes', agw_n, agw_health_probe_names[i])
           }
-        ]
-      }
-    }]
-
-    backendHttpSettingsCollection: [for i in range(0, length(app_names_parsed)): {
-      name: agw_backend_http_setting_names[i]
-      properties: {
-        port: 80
-        protocol: 'Http'
-        cookieBasedAffinity: 'Disabled'
-        pickHostNameFromBackendAddress: true
-        probeEnabled: true
-        probe: {
-          id: resourceId('Microsoft.Network/applicationGateways/probes', agw_n, agw_health_probe_names[i])
         }
       }
-    }]
+    ]
 
-    httpListeners: [for i in range(0, length(app_names_parsed)): {
-      name: agw_http_listener_names[i]
-      properties: {
-        frontendIPConfiguration: {
-          id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', agw_n, agw_frontend_pub_ip_config_n)
+    httpListeners: [
+      for i in range(0, length(app_names_parsed)): {
+        name: agw_http_listener_names[i]
+        properties: {
+          frontendIPConfiguration: {
+            id: resourceId(
+              'Microsoft.Network/applicationGateways/frontendIPConfigurations',
+              agw_n,
+              agw_frontend_pub_ip_config_n
+            )
+          }
+          frontendPort: {
+            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', agw_n, agw_front_end_port_names[i])
+          }
+          protocol: 'Http'
+          sslCertificate: null
         }
-        frontendPort: {
-          id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', agw_n, agw_front_end_port_names[i])
-        }
-        protocol: 'Http'
-        sslCertificate: null
       }
-    }]
+    ]
 
-    requestRoutingRules: [for i in range(0, length(app_names_parsed)): {
-      name: agw_rules[i]
-      properties: union({
-        ruleType: 'Basic'
-        priority: agw_v2 ? ((i+1) * 100) : null
-        httpListener: {
-          id: resourceId('Microsoft.Network/applicationGateways/httpListeners', agw_n, agw_http_listener_names[i])
-        }
-        backendAddressPool: {
-          id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', agw_n, agw_backend_addr_pool_names[i])
-        }
-        backendHttpSettings: {
-          id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', agw_n, agw_backend_http_setting_names[i])
-        }
-      },  agw_v2 ? { priority: ((i+1) * 100)} : {})
-    }]
-
-    probes: [for i in range(0, length(app_names_parsed)): {
-      name: agw_health_probe_names[i]
-      properties: {
-        protocol: 'Http'
-        pickHostNameFromBackendHttpSettings: true
-        path: '/'
-        timeout: 20
-        interval: 30
-        unhealthyThreshold: 3
+    requestRoutingRules: [
+      for i in range(0, length(app_names_parsed)): {
+        name: agw_rules[i]
+        properties: union(
+          {
+            ruleType: 'Basic'
+            priority: agw_v2 ? ((i + 1) * 100) : null
+            httpListener: {
+              id: resourceId('Microsoft.Network/applicationGateways/httpListeners', agw_n, agw_http_listener_names[i])
+            }
+            backendAddressPool: {
+              id: resourceId(
+                'Microsoft.Network/applicationGateways/backendAddressPools',
+                agw_n,
+                agw_backend_addr_pool_names[i]
+              )
+            }
+            backendHttpSettings: {
+              id: resourceId(
+                'Microsoft.Network/applicationGateways/backendHttpSettingsCollection',
+                agw_n,
+                agw_backend_http_setting_names[i]
+              )
+            }
+          },
+          agw_v2 ? { priority: ((i + 1) * 100) } : {}
+        )
       }
-    }]
+    ]
 
-    firewallPolicy: agw_enable_waf_v2 ? {
-      id: firewallPolicy.id
-    } : null
+    probes: [
+      for i in range(0, length(app_names_parsed)): {
+        name: agw_health_probe_names[i]
+        properties: {
+          protocol: 'Http'
+          pickHostNameFromBackendHttpSettings: true
+          path: '/'
+          timeout: 20
+          interval: 30
+          unhealthyThreshold: 3
+        }
+      }
+    ]
+
+    firewallPolicy: agw_enable_waf_v2
+      ? {
+          id: firewallPolicy.id
+        }
+      : null
   }
 }
 
 output id string = applicationGateway.id
-output pip_ip string =  publicIpAddress.properties.publicIPAllocationMethod == 'Static' ? publicIpAddress.properties.ipAddress : ''
+output pip_ip string = publicIpAddress.properties.publicIPAllocationMethod == 'Static'
+  ? publicIpAddress.properties.ipAddress
+  : ''
